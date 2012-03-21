@@ -8,10 +8,13 @@ public class Comms implements Runnable {
 	private Socket server;
 	private String line;
 	private PrintStream out;
-	private Action action = Action.NONE;
+	private Action action = Action.LOGIN;
 	private MySQL m = null;
-	Comms(Socket server) {
+	private Server parent;
+	Comms(Socket server, MySQL my, Server s) {
 		this.server=server;
+		m = my;
+		parent = s;
 	}
 
 	public void run () {
@@ -20,30 +23,15 @@ public class Comms implements Runnable {
 			DataInputStream in = new DataInputStream (server.getInputStream());
 			out = new PrintStream(server.getOutputStream());
 			Scanner sin = new Scanner(in);
+			out.print("Enter username:");
 			while(sin.hasNextLine()) {
 				line = sin.nextLine();
-				if(action==Action.NONE){
-					if(line.equals("kill")){ System.exit(0); }
-					if(line.equals("exit")){ 
-						server.close();  
-						}
-					if(line.equals("connect")){
-						out.print("Connecting... ");
-						m = new MySQL(this);
-						out.println("Connected");
-					}
-					if(m!=null&&line.equals("login")){
-						action = Action.LOGIN;
-						out.print("Enter username:");
-					}
-				}
-				if(line.equals("login")==false&&action==Action.LOGIN){
-					if(m.hasUser(line.trim())){
-						out.println("We have that user");
-					}else{
-						out.println("We don't has that user");
-					}
-					action = Action.NONE;
+				switch(action){
+				case NONE:
+					processCommand(line.trim());
+					break;
+				case LOGIN:
+					login(line.trim());
 				}
 			}
 		} catch (IOException ioe) {
@@ -55,5 +43,34 @@ public class Comms implements Runnable {
 	}
 	public void print(String p){
 		out.println(p);
+	}
+	public void disconnect(){
+		try {
+			server.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	public void login(String u){
+		if(m.hasUser(u)){
+			out.println("Logged in");
+			action = Action.NONE;
+		}else{
+			out.print("Authentication failure\nEnter username:");
+		}
+	}
+	public void processCommand(String c){
+		if(c.equals("exit")){
+			out.println("Disconnecting");
+			try {
+				server.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}else if(c.equals("kill")){
+			parent.quit();
+		}else{
+			out.println("Command not recognized");
+		}
 	}
 }

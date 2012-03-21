@@ -1,5 +1,4 @@
-import java.io.*;
-import java.net.*;
+
 
 /**
  * Title:        Sample Server
@@ -12,27 +11,9 @@ import java.net.*;
  */
 
 public class Main {
-
-  private static int port=6666, maxConnections=0;
   // Listen for incoming connections and handle them
   public static void main(String[] args) {
-    int i=0;
-
-    try{
-      ServerSocket listener = new ServerSocket(port);
-      Socket server;
-
-      while((i+1 < maxConnections) || (maxConnections == 0)){
-    	i++;
-        server = listener.accept();
-        Comms connection = new Comms(server);
-        Thread t = new Thread(connection);
-        t.start();
-      }
-    } catch (IOException ioe) {
-      System.out.println("IOException on socket listen: " + ioe);
-      ioe.printStackTrace();
-    }
+	  new Server();
   }
 
 }

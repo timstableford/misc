@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 
 public class MySQL {
 	private Connection con = null;
-    public MySQL(Comms c){
+    public MySQL(){
 
         String url = "jdbc:mysql://192.168.2.2:3306/tim_test";
         String user = "tim";
