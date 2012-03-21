@@ -9,21 +9,22 @@ public class Comms implements Runnable {
 	private Socket server;
 	private String line;
 	private PrintStream out;
-	private Action action = Action.LOGIN;
+	private Action action = Action.USER;
 	private MySQL m = null;
 	private Server parent;
+	private Scanner sin = null;
+	private String username = null, password = null;
 	Comms(Socket server, MySQL my, Server s) {
 		this.server=server;
 		m = my;
 		parent = s;
 	}
-
 	public void run () {
 		try {
 			// Get input from the client
 			DataInputStream in = new DataInputStream (server.getInputStream());
 			out = new PrintStream(server.getOutputStream());
-			Scanner sin = new Scanner(in);
+			sin = new Scanner(in);
 			out.print("Enter username:");
 			while(sin.hasNextLine()) {
 				line = sin.nextLine();
@@ -31,8 +32,17 @@ public class Comms implements Runnable {
 				case NONE:
 					processCommand(line.trim());
 					break;
-				case LOGIN:
-					login(line.trim());
+				case USER:
+					username = line.trim();
+					action = Action.PASS;
+					out.print("Enter password:");
+					break;
+				case PASS:
+					password = line.trim();
+					login();
+					break;
+				default:
+					out.print("Internal error, action not recognized");
 				}
 			}
 		} catch (IOException ioe) {
@@ -52,12 +62,15 @@ public class Comms implements Runnable {
 			e.printStackTrace();
 		}
 	}
-	public void login(String u){
-		if(m.hasUser(u)){
+	public void login(){
+		if(m.hasUser(username,password)){
 			out.println("Logged in");
 			action = Action.NONE;
+			System.out.println("User "+username+" logged in");
 		}else{
 			out.print("Authentication failure\nEnter username:");
+			action = Action.USER;
+			System.out.println("Authentication failure");
 		}
 	}
 	public void processCommand(String c){
