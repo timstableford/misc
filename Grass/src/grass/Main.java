@@ -3,6 +3,7 @@ package grass;
 import java.io.IOException;
 
 import grass.data.Grid;
+import grass.data.NPC;
 import grass.data.Player;
 import grass.gui.MainFrame;
 
@@ -24,6 +25,8 @@ public class Main {
 		try {
 			Player p = new Player("Link","player.png",300,150);
 			g.setPlayer(p);
+			NPC npc = new NPC("Bob","player.png",100,200);
+			g.addCharacter(npc);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -19,37 +19,36 @@ public class PlayerRunnable implements Runnable {
 		while(move){
 			switch(direction){
 			case UP:
-				double c = player.getGridx()-speed;
+				double c = player.getGridy()-speed;
 				if(c>64){
 					player.setDirection(CharacterDirection.UP);
-					player.setGridx(c);
+					player.setGridy(c);
 					renderPanel.repaint();
 				}
 				break;
 			case DOWN:
-				double d = player.getGridx()+speed;
+				double d = player.getGridy()+speed;
 				if(d-32<renderPanel.getHeight()){
 					player.setDirection(CharacterDirection.DOWN);
-					player.setGridx(d);
+					player.setGridy(d);
 					renderPanel.repaint();
 				}
 				break;
 			case LEFT:
-				double e = player.getGridy()+speed;
+				double e = player.getGridx()-speed;
 				if(e-64<renderPanel.getWidth()){
 					player.setDirection(CharacterDirection.LEFT);
-					player.setGridy(e);
+					player.setGridx(e);
 					renderPanel.repaint();
 				}
 				break;
 			case RIGHT:
-				double f = player.getGridy()-speed;
-				System.out.println(f);
-				//if(f>96){
+				double f = player.getGridx()+speed;
+				if(f>96){
 					player.setDirection(CharacterDirection.RIGHT);
-					player.setGridy(f);
+					player.setGridx(f);
 					renderPanel.repaint();
-				//}
+				}
 				break;
 			}
 			try {

@@ -1,1 +1,2 @@
 grass.bmp
+stone.jpeg

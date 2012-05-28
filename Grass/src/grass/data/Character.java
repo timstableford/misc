@@ -36,13 +36,15 @@ public abstract class Character {
 	public void setGridy(double gridy) {
 		this.gridy = gridy;
 	}
+	
 	public void setDirection(CharacterDirection d){
 		direction = d;
 	}
 	public void paint(Graphics2D g2){
-		double rot = Math.PI/2.00*(double)(direction.ordinal()-1);
+		double rot = Math.PI/2.00*(double)(direction.ordinal());
 		g2.rotate(rot, gridx+tD/2, gridy+tD/2);
 		g2.drawImage(image,(int)(gridx),(int)(gridy), null);
+		g2.rotate(-rot, gridx+tD/2, gridy+tD/2);
 	}
 	public String toString(){
 		return name;
