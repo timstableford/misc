@@ -1,5 +1,6 @@
 package grass.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -8,6 +9,8 @@ import grass.data.Grid;
 import grass.data.Listener;
 import grass.data.Tile;
 
+import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class RenderPanel extends JPanel{

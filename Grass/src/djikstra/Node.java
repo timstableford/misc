@@ -32,13 +32,16 @@ public class Node {
 		return distance+"";
 	}
 	public boolean isNeighbour(Node n){
-		if(getDistance(n)<1.80){
+		if(getDistance(n)<1.5){
 			return true;
 		}else{
 			return false;
 		}
 	}
 	public double getDistance(Node n){
+		if(n==null){
+			return 99999999;
+		}
 		Point2D a = new Point2D.Double(x,y);
 		Point2D b = new Point2D.Double(n.getX(),n.getY());
 		return a.distance(b);

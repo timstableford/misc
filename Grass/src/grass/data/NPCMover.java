@@ -9,50 +9,86 @@ import djikstra.Path;
 
 public class NPCMover implements Runnable{
 	private NPC npc;
-	private final double speed = 5.00;
+	private final double speed = 4;
 	private RenderPanel renderPanel;
 	private ArrayList<Tile> path;
 	private Grid grid;
-	public NPCMover(ArrayList<Tile> path, NPC npc, RenderPanel renderPanel, Grid grid){
+	private boolean run = true;
+	public NPCMover(NPC npc, RenderPanel renderPanel, Grid grid){
 		this.grid = grid;
 		this.renderPanel = renderPanel;
 		this.npc = npc;
-		this.path = path;
+		Tile r = grid.charInTile(npc);
+		Tile s = grid.charInTile(grid.getPlayer());
+		if(!s.isPassable()){
+			Tile closest = null;
+			for(Tile t: grid.tileList()){
+				if(closest==null){ closest = t; }
+				if(s.getDistance(t)<closest.getDistance(s)&&t.isPassable()){
+					closest = t;
+				}
+			}
+			s = closest;
+		}
+		Path p = new Path(r.getGridX(),r.getGridY(),s.getGridX(),s.getGridY(),grid.tileList());
+		this.path = p.getPath();
 	}
 	@Override
 	public void run() {
+		grid.centerCharacter(npc);
+		renderPanel.repaint();
 		for(Tile t: path){
-			System.out.println("moving to "+t.getX()+":"+t.getY());
-			moveTo(t);
+			if(run){ moveTo(t); }
 		}
 	}
 	private void moveTo(Tile t){
-		double moved = 0;
-		Point2D a = new Point2D.Double(npc.getGridx(),npc.getGridy());
-		
-		Point2D b = new Point2D.Double((t.getX()*32+16),(t.getY()*32+16));
-		double max = a.distance(b);
-		double x = Math.abs(npc.getGridx()-(t.getX()*32+16));
-		double y = Math.abs(npc.getGridy()-(t.getY()*32+16));
-		double newx,newy;
-		double angle = Math.atan2(y,x);
-		while(moved<max){
-			try {
-				Thread.sleep(50);
-			} catch (InterruptedException e) {
-				System.err.println("Player couldnt sleep");
+		if(!run){ return; }
+		Tile lastTile = grid.charInTile(npc);
+		System.out.println("current tile "+lastTile.getGridX()+":"+lastTile.getGridY()+" next tile "+t.getGridX()+":"+t.getGridY());
+		while(lastTile.getGridX()!=t.getGridX()||lastTile.getGridY()!=t.getGridY()){
+			if(lastTile.getGridY()>t.getGridY()&&grid.tilePassable(lastTile.getGridX(),lastTile.getGridY()-1)){
+				move(CharacterDirection.UP);
+			}else if(lastTile.getGridY()<t.getGridY()&&grid.tilePassable(lastTile.getGridX(),lastTile.getGridY()+1)){
+				move(CharacterDirection.DOWN);
+			}else if(lastTile.getGridX()>t.getGridX()&&grid.tilePassable(lastTile.getGridX()-1,lastTile.getGridY())){
+				move(CharacterDirection.LEFT);
+			}else if(lastTile.getGridX()<t.getGridX()&&grid.tilePassable(lastTile.getGridX()+1,lastTile.getGridY())){
+				move(CharacterDirection.RIGHT);
+			}else{
+				System.err.println("cannot move npc");
 			}
-			System.out.println(moved+":"+max);
-			moved=moved+speed;
-			newy = moved*Math.sin(angle)+a.getY();
-			newx = moved*Math.cos(angle)+a.getX();
-			npc.setGridx(newx);
-			npc.setGridy(newy);
-			renderPanel.repaint();
-			if(moved>max){
-				moved = max;
-			}
+			lastTile = grid.charInTile(npc);
 		}
 	}
-
+	private void move(CharacterDirection c){
+		if(!run){ return; }
+		double dist = 0;
+		npc.setDirection(c);
+		while(dist<32){
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException e1) {
+				System.err.println("Player couldnt sleep");
+			}
+			switch(c){
+			case UP:
+				npc.setY(npc.getY()-speed);
+				break;
+			case DOWN:
+				npc.setY(npc.getY()+speed);
+				break;
+			case LEFT:
+				npc.setX(npc.getX()-speed);
+				break;
+			case RIGHT:
+				npc.setX(npc.getX()+speed);
+				break;
+			}
+			renderPanel.repaint();
+			dist = dist + speed;
+		}
+	}
+	public void stop(){
+		run = false;
+	}
 }

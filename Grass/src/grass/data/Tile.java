@@ -1,5 +1,9 @@
 package grass.data;
 
+import java.awt.geom.Point2D;
+
+import djikstra.Node;
+
 
 public class Tile {
 	private String fileName;
@@ -28,16 +32,31 @@ public class Tile {
 	public void setPassable(boolean passable) {
 		this.passable = passable;
 	}
-	public int getX() {
+	public int getGridX() {
 		return x;
 	}
-	public void setX(int x) {
+	public void setGridX(int x) {
 		this.x = x;
 	}
-	public int getY() {
+	public int getX(){
+		return x*32+16;
+	}
+	public int getY(){
+		return y*32+16;
+	}
+
+	public int getGridY() {
 		return y;
 	}
-	public void setY(int y) {
+	public void setGridY(int y) {
 		this.y = y;
+	}
+	public double getDistance(Tile n){
+		if(n==null){
+			return 99999999;
+		}
+		Point2D a = new Point2D.Double(x,y);
+		Point2D b = new Point2D.Double(n.getGridX(),n.getGridY());
+		return a.distance(b);
 	}
 }

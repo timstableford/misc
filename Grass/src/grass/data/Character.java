@@ -24,16 +24,16 @@ public abstract class Character {
 		BufferedInputStream bis = new BufferedInputStream(is);
 		image = ImageIO.read(bis);
 	}
-	public double getGridx() {
+	public double getX() {
 		return gridx;
 	}
-	public void setGridx(double gridx) {
+	public void setX(double gridx) {
 		this.gridx = gridx;
 	}
-	public double getGridy() {
+	public double getY() {
 		return gridy;
 	}
-	public void setGridy(double gridy) {
+	public void setY(double gridy) {
 		this.gridy = gridy;
 	}
 	
@@ -42,9 +42,11 @@ public abstract class Character {
 	}
 	public void paint(Graphics2D g2){
 		double rot = Math.PI/2.00*(double)(direction.ordinal());
-		g2.rotate(rot, gridx+tD/2, gridy+tD/2);
-		g2.drawImage(image,(int)(gridx),(int)(gridy), null);
-		g2.rotate(-rot, gridx+tD/2, gridy+tD/2);
+		g2.translate(gridx, gridy);
+		g2.rotate(rot);
+		g2.drawImage(image,-tD/2,-tD/2, null);
+		g2.rotate(-rot);
+		g2.translate(-gridx,-gridy);
 	}
 	public String toString(){
 		return name;

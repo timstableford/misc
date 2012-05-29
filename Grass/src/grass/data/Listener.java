@@ -5,13 +5,12 @@ import grass.gui.RenderPanel;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import djikstra.Path;
-
 public class Listener implements KeyListener{
 	private Grid grid;
 	private RenderPanel renderPanel;
 	private char pressed = 0;
 	private PlayerRunnable runner;
+	private NPCMover mover;
 	public Listener(Grid g, RenderPanel p){
 		grid = g;
 		renderPanel = p;
@@ -24,7 +23,6 @@ public class Listener implements KeyListener{
 	public void keyPressed(KeyEvent e) {
 		char code = e.getKeyChar();
 		if(pressed!=0){ return; }
-		pressed = code;
 		switch(code){
 		case 'w':
 			pressed = code;
@@ -55,12 +53,15 @@ public class Listener implements KeyListener{
 			c.start();
 			break;
 		case 'u':
-			Tile r = grid.charInTile(grid.getCharacters().get(1));
-			Path p = new Path(r.getX(),r.getY(),r.getX()+5,r.getY(),grid.tileList());
-			NPCMover m = new NPCMover(p.getPath(),(NPC)grid.getCharacters().get(1),renderPanel,grid);
-			Thread u = new Thread(m);
+			if(mover!=null){ mover.stop(); mover=null; }
+			mover = new NPCMover((NPC)grid.getCharacters().get(1),renderPanel,grid);
+			Thread u = new Thread(mover);
 			u.start();
 			break;
+		case 'p':
+			Follower f = new Follower((NPC)grid.getCharacters().get(1),renderPanel,grid);
+			Thread w = new Thread(f);
+			w.start();
 		}
 	}
 

@@ -88,7 +88,7 @@ public class Grid {
 			for(int j=0;j<gridy;j++){
 				if(gameTiles[i][j]!=null){
 					Tile p = gameTiles[i][j];
-					System.out.println("x="+p.getX()+" y="+p.getY()+" image="+gameTiles[i][j].toString()+" rot="+gameTiles[i][j].getRotation()+" passable "+gameTiles[i][j].isPassable());
+					System.out.println("x="+p.getGridX()+" y="+p.getGridY()+" image="+gameTiles[i][j].toString()+" rot="+gameTiles[i][j].getRotation()+" passable "+gameTiles[i][j].isPassable());
 				}
 			}
 		}
@@ -132,15 +132,23 @@ public class Grid {
 		}
 	}
 	public Tile charInTile(Character c){
-		Point2D point = new Point2D.Double(c.getGridx(),c.getGridy());
+		Point2D point = new Point2D.Double(c.getX(),c.getY());
 		Point2D topLeft,bottomRight;
 		for(Tile t: tileList()){
-			topLeft = new Point2D.Double(t.getX()*32,t.getY()*32);
-			bottomRight = new Point2D.Double(t.getX()*32+32,t.getY()*32+32);
+			topLeft = new Point2D.Double(t.getGridX()*32,t.getGridY()*32);
+			bottomRight = new Point2D.Double(t.getGridX()*32+32,t.getGridY()*32+32);
 			if(pointInRectangle(topLeft,bottomRight,point)){
 				return t;
 			}
 		}
 		return null;
+	}
+	public void centerCharacter(Character c){
+		Tile lastTile = charInTile(c);
+		c.setX(lastTile.getX());
+		c.setY(lastTile.getY());
+	}
+	public boolean tilePassable(int x,int y){
+		return gameTiles[x][y].isPassable();
 	}
 }

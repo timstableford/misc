@@ -25,7 +25,7 @@ public class Main {
 		try {
 			Player p = new Player("Link","player.png",300,150);
 			g.setPlayer(p);
-			NPC npc = new NPC("Bob","player.png",100,200);
+			NPC npc = new NPC("Bob","player.png",16,16);
 			g.addCharacter(npc);
 		} catch (IOException e) {
 			e.printStackTrace();

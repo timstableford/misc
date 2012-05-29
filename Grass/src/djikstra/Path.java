@@ -13,6 +13,8 @@ public class Path {
 	private boolean finished = false;
 	private ArrayList<Tile> path = new ArrayList<Tile>();
 	private ArrayList<Tile> tiles;
+	private ArrayList<Node> visited = new ArrayList<Node>();
+	private int inc = 0;
 	public Path(int sx,int sy,int ex, int ey, ArrayList<Tile> tiles){
 		this.nodes = generateNodes(tiles);
 		this.tiles = tiles;
@@ -26,8 +28,14 @@ public class Path {
 		}
 		do{
 			considerNeighbours();
-			currentNode = unvisited.get(0);
-		}while(!finished&&unvisited.size()>0);
+			currentNode = getUnvisitedNeighbour();
+		}while(!finished&&endNode.getParent()==null&&getUnvisitedNeighbour()!=null);
+		if(unvisited.size()==0||endNode.getParent()==null){
+			System.err.println("could not find path");
+		}else{
+			System.out.println("conclusion reached");
+		}
+		
 		Node k = endNode;
 		while(k.getParent()!=null){
 			path.add(findTile(k.getX(),k.getY()));
@@ -35,14 +43,14 @@ public class Path {
 		}
 		Collections.reverse(path);
 		for(Tile t: path){
-			System.out.println(t.getX()+":"+t.getY());
+			System.out.println(t.getGridX()+":"+t.getGridY());
 		}
 	}
 	private ArrayList<Node> generateNodes(ArrayList<Tile> t){
 		ArrayList<Node> nodes = new ArrayList<Node>();
 		for(Tile b: t){
 			if(b.isPassable()){
-				nodes.add(new Node(b.getX(),b.getY()));
+				nodes.add(new Node(b.getGridX(),b.getGridY()));
 			}
 		}
 		return nodes;
@@ -68,11 +76,25 @@ public class Path {
 		if(currentNode==endNode){
 			finished = true;
 		}
+		System.out.println("considering "+inc);
+		inc++;
 		unvisited.remove(currentNode);
+		visited.add(currentNode);
+	}
+	private Node getUnvisitedNeighbour(){
+		if(unvisited.size()==0){ return null; }
+		for(Node m: visited){
+			for(Node n: unvisited){
+				if(n.isNeighbour(m)){
+					return n;
+				}
+			}
+		}
+		return null;
 	}
 	private Tile findTile(int x, int y){
 		for(Tile t: tiles){
-			if(t.getX()==x&&t.getY()==y){
+			if(t.getGridX()==x&&t.getGridY()==y){
 				return t;
 			}
 		}
